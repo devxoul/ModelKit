@@ -80,6 +80,10 @@ public class SuperModel: NSObject {
         }
     }
 
+    public class func fromList(list: [Dict]) -> [SuperModel] {
+        return list.map { self.init($0) }
+    }
+
     public convenience init(_ dictionary: Dict) {
         self.init()
         self.update(dictionary)

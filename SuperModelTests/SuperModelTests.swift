@@ -60,5 +60,25 @@ class SuperModelTests: XCTestCase {
         XCTAssertEqual(user.id, 1300.123)
         XCTAssertEqual(user.name, "132")
     }
+
+    func testList() {
+        let response = [
+            [
+                "id": 123,
+                "name": "devxoul",
+                "bio": NSNull(),
+            ],
+            [
+                "id": "1,300.123",
+                "name": 132,
+            ],
+        ]
+        let users = User.fromList(response) as! [User]
+        XCTAssertEqual(users.count, 2)
+        XCTAssertEqual(users[0].id, 123)
+        XCTAssertEqual(users[0].name, "devxoul")
+        XCTAssertEqual(users[1].id, 1300.123)
+        XCTAssertEqual(users[1].name, "132")
+    }
     
 }
