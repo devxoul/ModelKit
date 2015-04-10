@@ -24,7 +24,7 @@ import Foundation
 
 
 public typealias Number = NSNumber
-public typealias Dict = [NSObject: AnyObject]
+public typealias Dict = [String: NSObject]
 
 
 public func == (lhs: Any.Type, rhs: Any.Type) -> Bool {
@@ -82,30 +82,65 @@ public class SuperModel: NSObject {
 
     public convenience init(_ dictionary: Dict) {
         self.init()
+        self.update(dictionary)
+    }
 
-        for (key, value) in dictionary {
-            if key is String == false {
-                continue
-            }
+    public func update(dictionary: Dict) {
+        self.setValuesForKeysWithDictionary(dictionary)
+    }
 
-            let key = key as! String
-            let type = self.properties[key]!
+    public override func setValue(value: AnyObject?, forKey key: String) {
+        if let type = self.properties[key] { // which type property declared as
 
             // String
-            if let value = value as? String where (type == String.self || type == Optional<String>.self) {
-                self.setValue(value, forKey: key)
+            if type == String.self || type == Optional<String>.self {
+                if let value = value as? String {
+                    super.setValue(value, forKey: key)
+                } else if let value = value as? Number {
+                    super.setValue(value.stringValue, forKey: key)
+                }
             }
 
             // Number
-            else if let value = value as? Number where (type == Number.self || type == Optional<Number>.self) {
-                self.setValue(value, forKey: key)
+            else if type == Number.self || type == Optional<Number>.self {
+                if let value = value as? Number {
+                    super.setValue(value, forKey: key)
+                } else if let value = value as? String, number = self.dynamicType.numberFromString(value) {
+                    super.setValue(number, forKey: key)
+                }
             }
 
             // What else?
             else {
-                println("key, value, type")
+                println("Else: \(key): \(type) = \(value)")
+            }
+        } else {
+            super.setValue(value, forKey: key)
+        }
+    }
+
+    public func toDictionary(nulls: Bool = false) -> Dict {
+        var dictionary = Dict()
+        for name in self.properties.keys {
+            if let value: AnyObject = self.valueForKey(name) {
+                dictionary[name] = value as? NSObject
+            } else if nulls {
+                dictionary[name] = NSNull()
             }
         }
+        return dictionary
+    }
+
+    private struct Shared {
+        static let numberFormatter = NSNumberFormatter()
+    }
+
+    public class func numberFromString(string: String) -> Number? {
+        let formatter = Shared.numberFormatter
+        if formatter.numberStyle != .DecimalStyle {
+            formatter.numberStyle = .DecimalStyle
+        }
+        return formatter.numberFromString(string)
     }
 
 }

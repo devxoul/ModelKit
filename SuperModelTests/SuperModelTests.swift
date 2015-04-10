@@ -8,6 +8,22 @@
 
 import UIKit
 import XCTest
+import SuperModel
+
+class User: SuperModel {
+    var id: Number!
+    var name: String!
+    var bio: String?
+    var city: String! = "Seoul"
+    var posts: [Post]?
+}
+
+class Post: SuperModel {
+    var id: Number!
+    var title: String!
+    var content: String?
+    var author: User!
+}
 
 class SuperModelTests: XCTestCase {
     
@@ -22,15 +38,27 @@ class SuperModelTests: XCTestCase {
     }
     
     func testExample() {
-        // This is an example of a functional test case.
-        XCTAssert(true, "Pass")
+        let dict = [
+            "id": 123,
+            "name": "devxoul",
+            "bio": NSNull(),
+        ]
+        let user = User(dict)
+        XCTAssertEqual(user.id, 123)
+        XCTAssertEqual(user.name!, "devxoul")
+        XCTAssertNil(user.bio)
+        XCTAssertEqual(user.city, "Seoul")
+        XCTAssertEqual(user.toDictionary(), ["id": 123, "name": "devxoul", "city": "Seoul"])
     }
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measureBlock() {
-            // Put the code you want to measure the time of here.
-        }
+
+    func testExample2() {
+        let dict = [
+            "id": "1,300.123",
+            "name": 132,
+        ]
+        let user = User(dict)
+        XCTAssertEqual(user.id, 1300.123)
+        XCTAssertEqual(user.name, "132")
     }
     
 }
