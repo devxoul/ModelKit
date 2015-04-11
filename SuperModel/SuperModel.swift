@@ -94,10 +94,13 @@ public class SuperModel: NSObject {
 
             let property = Property()
             property.name = name
-            property.type = propertyMirror.valueType
+            if toString(propertyMirror.valueType) == "__NSCFNumber" {
+                property.type = NSNumber.self
+            } else {
+                property.type = propertyMirror.valueType
+            }
             property.isOptional = propertyMirror.disposition == .Optional
             properties.append(property)
-            println(property)
         }
 
         self.dynamicType.cachedProperties = properties
