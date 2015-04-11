@@ -22,7 +22,7 @@ class Post: SuperModel {
     var id: Number!
     var title: String!
     var content: String?
-    var author: User!
+    var author: User?
 }
 
 class SuperModelTests: XCTestCase {
@@ -91,8 +91,31 @@ class SuperModelTests: XCTestCase {
             ]
         ]
         let post = Post(dict)
-        XCTAssertEqual(post.author.id, 123)
-        XCTAssertEqual(post.author.name, "devxoul")
+        XCTAssertEqual(post.author!.id, 123)
+        XCTAssertEqual(post.author!.name, "devxoul")
+    }
+
+    func testRelationshipList() {
+        let dict: Dict = [
+            "id": 123,
+            "name": "devxoul",
+            "posts": [
+                [
+                    "id": 998,
+                    "title": "Hello, Title!",
+                ],
+                [
+                    "id": 999,
+                    "title": "The Title",
+                ]
+            ]
+        ]
+        let user = User(dict)
+        XCTAssertEqual(user.posts!.count, 2)
+        XCTAssertEqual(user.posts![0].id, 998)
+        XCTAssertEqual(user.posts![0].title, "Hello, Title!")
+        XCTAssertEqual(user.posts![1].id, 999)
+        XCTAssertEqual(user.posts![1].title, "The Title")
     }
     
 }

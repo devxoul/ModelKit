@@ -35,7 +35,10 @@ public func == (lhs: Any.Type, rhs: Any.Type) -> Bool {
 internal class Property: Printable {
     var name: String!
     var type: Any.Type!
-    var optional: Bool = false
+    var isOptional: Bool = false
+    var isArray: Bool {
+        return self.typeDescription.hasPrefix("Array<")
+    }
 
     var typeDescription: String {
         var description = toString(self.type).stringByReplacingOccurrencesOfString(
@@ -44,7 +47,7 @@ internal class Property: Printable {
             options: .allZeros,
             range: nil
         )
-        if self.optional {
+        if self.isOptional {
             let start = advance(description.startIndex, "Optional<".length)
             let end = advance(description.endIndex, -1 * ">".length)
             let range = Range<String.Index>(start: start, end: end)
@@ -55,8 +58,14 @@ internal class Property: Printable {
 
     var modelClass: SuperModel.Type? {
         var className = self.typeDescription
-        if self.optional {
+        if self.isOptional {
             className = className.substringToIndex(advance(className.endIndex, -1))
+        }
+        if self.isArray {
+            let start = advance(className.startIndex, "Array<".length)
+            let end = advance(className.endIndex, -1 * ">".length)
+            let range = Range<String.Index>(start: start, end: end)
+            className = className.substringWithRange(range)
         }
         return NSClassFromString(className) as? SuperModel.Type
     }
@@ -86,7 +95,7 @@ public class SuperModel: NSObject {
             let property = Property()
             property.name = name
             property.type = propertyMirror.valueType
-            property.optional = propertyMirror.disposition == .Optional
+            property.isOptional = propertyMirror.disposition == .Optional
             properties.append(property)
             println(property)
         }
@@ -141,6 +150,14 @@ public class SuperModel: NSObject {
                     super.setValue(value, forKey: key)
                 } else if let value = value as? String, number = self.dynamicType.numberFromString(value) {
                     super.setValue(number, forKey: key)
+                }
+            }
+
+            // List
+            else if let modelClass = property.modelClass where property.isArray {
+                if let array = value as? [Dict] {
+                    let models = modelClass.fromList(array)
+                    super.setValue(models, forKey: key)
                 }
             }
 
