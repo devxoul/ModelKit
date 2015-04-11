@@ -55,7 +55,6 @@ class SuperModelTests: XCTestCase {
         XCTAssertEqual(user.name!, "devxoul")
         XCTAssertNil(user.bio)
         XCTAssertEqual(user.city, "Seoul")
-        XCTAssertEqual(user.toDictionary(), ["id": 123, "name": "devxoul", "city": "Seoul"])
     }
 
     func testExample2() {
@@ -135,6 +134,51 @@ class SuperModelTests: XCTestCase {
         let formatter = Post.dateFormatterForKey("")
         let post = Post(dict)
         XCTAssertEqual(formatter.stringFromDate(post.createdAt!), dict["createdAt"] as! String)
+    }
+
+    func testToDictionary() {
+        let dict = [
+            "id": 123,
+            "name": "devxoul",
+            "bio": NSNull(),
+        ]
+        let user = User(dict)
+        XCTAssertEqual(user.toDictionary(), ["id": 123, "name": "devxoul", "city": "Seoul"])
+    }
+
+    func testToDictionary2() {
+        let dict: Dict = [
+            "id": 999,
+            "title": "The Title",
+            "createdAt": "2015-01-02T14:33:55.123000+0900",
+            "author": [
+                "id": 123,
+                "name": "devxoul",
+                "city": "Seoul",
+            ]
+        ]
+        let post = Post(dict)
+        XCTAssertEqual(post.toDictionary(), dict)
+    }
+
+    func testToDictionary3() {
+        let dict: Dict = [
+            "id": 123,
+            "name": "devxoul",
+            "city": "Daegu",
+            "posts": [
+                [
+                    "id": 998,
+                    "title": "Hello, Title!",
+                ],
+                [
+                    "id": 999,
+                    "title": "The Title",
+                ]
+            ]
+        ]
+        let user = User(dict)
+        XCTAssertEqual(user.toDictionary(), dict)
     }
     
 }

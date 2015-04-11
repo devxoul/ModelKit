@@ -200,7 +200,27 @@ public class SuperModel: NSObject {
         var dictionary = Dict()
         for property in self.properties {
             if let value: AnyObject = self.valueForKey(property.name) {
-                dictionary[property.name] = value as? NSObject
+
+                // Model
+                if let model = value as? SuperModel {
+                    dictionary[property.name] = model.toDictionary(nulls: nulls)
+                }
+
+                // List
+                else if let models = value as? [SuperModel] {
+                    dictionary[property.name] = models.map { $0.toDictionary(nulls: nulls) }
+                }
+
+                // Date
+                else if let date = value as? NSDate {
+                    let formatter = self.dynamicType.dateFormatterForKey(property.name)
+                    dictionary[property.name] = formatter.stringFromDate(date)
+                }
+
+                // Primitive Types
+                else {
+                    dictionary[property.name] = value as? NSObject
+                }
             } else if nulls {
                 dictionary[property.name] = NSNull()
             }
