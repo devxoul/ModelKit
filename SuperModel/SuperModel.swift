@@ -140,7 +140,12 @@ public class SuperModel: NSObject {
     }
 
     public override func setValue(value: AnyObject?, forKey key: String) {
-        if let property = self.properties.filter({ $0.name == key }).first where value != nil {
+        if let property = self.properties.filter({ $0.name == key }).first {
+            if value == nil {
+                super.setValue(value, forKey: key)
+                return
+            }
+
             let type = property.type
 
             // String
@@ -188,8 +193,6 @@ public class SuperModel: NSObject {
             else {
                 println("Else: \(key): \(type) = \(value)")
             }
-        } else {
-            super.setValue(value, forKey: key)
         }
     }
 
