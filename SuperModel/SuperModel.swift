@@ -78,6 +78,11 @@ internal class Property: Printable {
 
 public class SuperModel: NSObject {
 
+    public class func dateFormatterForKey(key: String) -> NSDateFormatter {
+        return NSDateFormatter() // as default
+    }
+
+
     internal var properties: [Property] {
         if let cachedProperties = self.dynamicType.cachedProperties {
             return cachedProperties
@@ -153,6 +158,13 @@ public class SuperModel: NSObject {
                     super.setValue(value, forKey: key)
                 } else if let value = value as? String, number = self.dynamicType.numberFromString(value) {
                     super.setValue(number, forKey: key)
+                }
+            }
+
+            else if type == NSDate.self || type == Optional<NSDate>.self {
+                let formatter = self.dynamicType.dateFormatterForKey(key)
+                if let date = formatter.dateFromString(value as! String) {
+                    super.setValue(date, forKey: key)
                 }
             }
 

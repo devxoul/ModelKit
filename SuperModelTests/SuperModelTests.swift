@@ -23,6 +23,13 @@ class Post: SuperModel {
     var title: String!
     var content: String?
     var author: User?
+    var createdAt: NSDate?
+
+    override class func dateFormatterForKey(key: String) -> NSDateFormatter {
+        let formatter = NSDateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"
+        return formatter
+    }
 }
 
 class SuperModelTests: XCTestCase {
@@ -116,6 +123,18 @@ class SuperModelTests: XCTestCase {
         XCTAssertEqual(user.posts![0].title, "Hello, Title!")
         XCTAssertEqual(user.posts![1].id, 999)
         XCTAssertEqual(user.posts![1].title, "The Title")
+    }
+
+    func testDate() {
+        let dict: Dict = [
+            "id": 999,
+            "title": "The Title",
+            "createdAt": "2015-01-02T14:33:55.123000+0900",
+        ]
+
+        let formatter = Post.dateFormatterForKey("")
+        let post = Post(dict)
+        XCTAssertEqual(formatter.stringFromDate(post.createdAt!), dict["createdAt"] as! String)
     }
     
 }
