@@ -32,51 +32,80 @@ public func == (lhs: Any.Type, rhs: Any.Type) -> Bool {
 }
 
 
-internal struct Property: Printable {
-    var name: String
-    var type: Any.Type
+internal class Property: Printable {
+    var name: String!
+    var type: Any.Type!
+    var optional: Bool = false
 
-    var description: String {
-        var description = "\(self.name): \(self.type)".stringByReplacingOccurrencesOfString(
+    var typeDescription: String {
+        var description = toString(self.type).stringByReplacingOccurrencesOfString(
             "Swift.",
             withString: "",
             options: .allZeros,
             range: nil
         )
+        if self.optional {
+            let start = advance(description.startIndex, "Optional<".length)
+            let end = advance(description.endIndex, -1 * ">".length)
+            let range = Range<String.Index>(start: start, end: end)
+            description = description.substringWithRange(range) + "?"
+        }
         return description
+    }
+
+    var modelClass: SuperModel.Type? {
+        var className = self.typeDescription
+        if self.optional {
+            className = className.substringToIndex(advance(className.endIndex, -1))
+        }
+        return NSClassFromString(className) as? SuperModel.Type
+    }
+
+    var description: String {
+        return "@property \(self.name): \(self.typeDescription)"
     }
 }
 
-typealias PropertyList = [String: Any.Type]
 
 public class SuperModel: NSObject {
 
-    internal var properties: PropertyList {
+    internal var properties: [Property] {
         if let cachedProperties = self.dynamicType.cachedProperties {
             return cachedProperties
         }
 
         let mirror = reflect(self)
         if mirror.count <= 1 {
-            return PropertyList()
+            return [Property]()
         }
 
-        var properties = PropertyList()
+        var properties = [Property]()
         for i in 1..<mirror.count {
-            let (name, property) = mirror[i]
-            let type = property.valueType
-            properties[name] = type
+            let (name, propertyMirror) = mirror[i]
+
+            let property = Property()
+            property.name = name
+            property.type = propertyMirror.valueType
+            property.optional = propertyMirror.disposition == .Optional
+            properties.append(property)
+            println(property)
         }
 
         self.dynamicType.cachedProperties = properties
         return properties
     }
 
-    internal class var cachedProperties: PropertyList? {
-        get { return objc_getAssociatedObject(self, "properties") as? PropertyList }
+    internal class var cachedProperties: [Property]? {
+        get {
+            return objc_getAssociatedObject(self, "properties") as? [Property]
+        }
         set {
-            let policy = objc_AssociationPolicy(OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            objc_setAssociatedObject(self, "properties", newValue as? AnyObject, policy)
+            objc_setAssociatedObject(
+                self,
+                "properties",
+                newValue,
+                objc_AssociationPolicy(OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            )
         }
     }
 
@@ -94,7 +123,8 @@ public class SuperModel: NSObject {
     }
 
     public override func setValue(value: AnyObject?, forKey key: String) {
-        if let type = self.properties[key] { // which type property declared as
+        if let property = self.properties.filter({ $0.name == key }).first where value != nil {
+            let type = property.type
 
             // String
             if type == String.self || type == Optional<String>.self {
@@ -114,6 +144,14 @@ public class SuperModel: NSObject {
                 }
             }
 
+            // Relationship
+            else if let modelClass = property.modelClass {
+                if let dict = value as? Dict {
+                    let model = modelClass.init(dict)
+                    super.setValue(model, forKey: key)
+                }
+            }
+
             // What else?
             else {
                 println("Else: \(key): \(type) = \(value)")
@@ -125,11 +163,11 @@ public class SuperModel: NSObject {
 
     public func toDictionary(nulls: Bool = false) -> Dict {
         var dictionary = Dict()
-        for name in self.properties.keys {
-            if let value: AnyObject = self.valueForKey(name) {
-                dictionary[name] = value as? NSObject
+        for property in self.properties {
+            if let value: AnyObject = self.valueForKey(property.name) {
+                dictionary[property.name] = value as? NSObject
             } else if nulls {
-                dictionary[name] = NSNull()
+                dictionary[property.name] = NSNull()
             }
         }
         return dictionary

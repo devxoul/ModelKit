@@ -80,5 +80,19 @@ class SuperModelTests: XCTestCase {
         XCTAssertEqual(users[1].id, 1300.123)
         XCTAssertEqual(users[1].name, "132")
     }
+
+    func testRelationship() {
+        let dict: Dict = [
+            "id": 999,
+            "title": "The Title",
+            "author": [
+                "id": 123,
+                "name": "devxoul",
+            ]
+        ]
+        let post = Post(dict)
+        XCTAssertEqual(post.author.id, 123)
+        XCTAssertEqual(post.author.name, "devxoul")
+    }
     
 }
