@@ -31,10 +31,26 @@ public func == (lhs: Any.Type, rhs: Any.Type) -> Bool {
     return ObjectIdentifier(lhs).hashValue == ObjectIdentifier(rhs).hashValue
 }
 
+public func == (lhs: SuperEnum.Type, rhs: SuperEnum.Type) -> Bool {
+    return toString(lhs) == toString(rhs)
+}
+
+public protocol SuperEnum {
+    var rawValue: Int { get }
+    func fromInt(int: Int) -> Self
+}
+
+public protocol StringEnum: SuperEnum {
+    var stringValue: String { get }
+    func fromString(string: String) -> Self
+}
+
 
 internal class Property: Printable {
     var name: String!
     var type: Any.Type!
+    var defaultValue: Any?
+
     var isOptional: Bool = false
     var isArray: Bool {
         return self.typeDescription.hasPrefix("Array<")
@@ -104,6 +120,7 @@ public class SuperModel: NSObject {
             } else {
                 property.type = propertyMirror.valueType
             }
+            property.defaultValue = propertyMirror.value
             property.isOptional = propertyMirror.disposition == .Optional
             properties.append(property)
         }
@@ -189,6 +206,22 @@ public class SuperModel: NSObject {
                 }
             }
 
+            // String Enum
+            else if let defaultValue = property.defaultValue as? StringEnum,
+                        stringValue = (value as? String) ?? (value as? NSNumber)?.stringValue {
+                let enumValue = defaultValue.fromString(value as! String)
+                super.setValue(enumValue.rawValue, forKey: key)
+            }
+
+            // Integer Enum
+            else if let enumType = property.type as? SuperEnum.Type {
+                if let rawValue = value as? NSNumber {
+                    super.setValue(rawValue, forKey: key)
+                } else if let string = value as? String, rawValue = self.dynamicType.numberFromString(string) {
+                    super.setValue(rawValue, forKey: key)
+                }
+            }
+
             // What else?
             else {
                 println("Else: \(key): \(type) = \(value)")
@@ -215,6 +248,16 @@ public class SuperModel: NSObject {
                 else if let date = value as? NSDate {
                     let formatter = self.dynamicType.dateFormatterForKey(property.name)
                     dictionary[property.name] = formatter.stringFromDate(date)
+                }
+
+                // String Enum
+                else if let defaultValue = property.defaultValue as? StringEnum {
+                    dictionary[property.name] = defaultValue.fromInt(value as! Int).stringValue
+                }
+
+                // Integer Enum
+                else if let enumValue = value as? SuperEnum {
+                    dictionary[property.name] = enumValue.rawValue
                 }
 
                 // Primitive Types

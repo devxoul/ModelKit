@@ -10,9 +10,39 @@ import UIKit
 import XCTest
 import SuperModel
 
+
+@objc enum Gender: Int, StringEnum, Printable {
+    case Unknown
+    case Male
+    case Female
+
+    var stringValue: String {
+        switch self {
+        case .Unknown: return "unknown"
+        case .Male: return "male"
+        case .Female: return "female"
+        }
+    }
+
+    func fromInt(int: Int) -> Gender {
+        return Gender(rawValue: int) ?? .Unknown
+    }
+
+    func fromString(string: String) -> Gender {
+        switch string {
+        case "male": return Gender.Male
+        case "female": return Gender.Female
+        default: return Gender.Unknown
+        }
+    }
+
+    var description: String { return self.stringValue.capitalizedString }
+}
+
 class User: SuperModel {
     var id: Number!
     var name: String!
+    var gender: Gender = .Unknown // enums must have a default value
     var bio: String?
     var city: String! = "Seoul"
     var posts: [Post]?
@@ -24,6 +54,7 @@ class Post: SuperModel {
     var content: String?
     var author: User?
     var createdAt: NSDate?
+    var authorName: String?
 
     override class func dateFormatterForKey(key: String) -> NSDateFormatter {
         let formatter = NSDateFormatter()
@@ -124,6 +155,16 @@ class SuperModelTests: XCTestCase {
         XCTAssertEqual(user.posts![1].title, "The Title")
     }
 
+    func testEnum() {
+        let dict: Dict = [
+            "id": 2,
+            "name": "devxoul",
+            "gender": "male",
+        ]
+        let user = User(dict)
+        XCTAssertEqual(user.gender, .Male)
+    }
+
     func testDate() {
         let dict: Dict = [
             "id": 999,
@@ -143,7 +184,7 @@ class SuperModelTests: XCTestCase {
             "bio": NSNull(),
         ]
         let user = User(dict)
-        XCTAssertEqual(user.toDictionary(), ["id": 123, "name": "devxoul", "city": "Seoul"])
+        XCTAssertEqual(user.toDictionary(), ["id": 123, "name": "devxoul", "city": "Seoul", "gender": "unknown"])
     }
 
     func testToDictionary2() {
@@ -155,6 +196,7 @@ class SuperModelTests: XCTestCase {
                 "id": 123,
                 "name": "devxoul",
                 "city": "Seoul",
+                "gender": "unknown",
             ]
         ]
         let post = Post(dict)
@@ -166,6 +208,7 @@ class SuperModelTests: XCTestCase {
             "id": 123,
             "name": "devxoul",
             "city": "Daegu",
+            "gender": "unknown",
             "posts": [
                 [
                     "id": 998,
