@@ -54,12 +54,16 @@ class Post: SuperModel {
     var content: String?
     var author: User?
     var createdAt: NSDate?
+    var publishedAt: NSDate?
     var authorName: String?
 
-    override class func dateFormatterForKey(key: String) -> NSDateFormatter {
-        let formatter = NSDateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"
-        return formatter
+    override class func dateFormatterForKey(key: String) -> NSDateFormatter? {
+        if key == "createdAt" {
+            let formatter = NSDateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"
+            return formatter
+        }
+        return nil
     }
 }
 
@@ -71,7 +75,7 @@ class SuperModelTests: XCTestCase {
     }
     
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        SuperModel.defaultDateFormatter.dateFormat = nil
         super.tearDown()
     }
     
@@ -172,9 +176,20 @@ class SuperModelTests: XCTestCase {
             "createdAt": "2015-01-02T14:33:55.123000+0900",
         ]
 
-        let formatter = Post.dateFormatterForKey("")
+        let formatter = Post.dateFormatterForKey("createdAt")
         let post = Post(dict)
-        XCTAssertEqual(formatter.stringFromDate(post.createdAt!), dict["createdAt"] as! String)
+        XCTAssertEqual(formatter!.stringFromDate(post.createdAt!), dict["createdAt"] as! String)
+    }
+
+    func testDefaultDate() {
+        SuperModel.defaultDateFormatter.dateFormat = "yyyy-MM-dd"
+        let dict: Dict = [
+            "id": 999,
+            "title": "The Title",
+            "publishedAt": "2015-01-03",
+        ]
+        let post = Post(dict)
+        XCTAssertEqual(SuperModel.defaultDateFormatter.stringFromDate(post.publishedAt!), "2015-01-03")
     }
 
     func testToDictionary() {

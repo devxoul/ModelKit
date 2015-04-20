@@ -94,8 +94,8 @@ internal class Property: Printable {
 
 public class SuperModel: NSObject {
 
-    public class func dateFormatterForKey(key: String) -> NSDateFormatter {
-        return NSDateFormatter() // as default
+    public class func dateFormatterForKey(key: String) -> NSDateFormatter? {
+        return self.defaultDateFormatter
     }
 
 
@@ -184,7 +184,7 @@ public class SuperModel: NSObject {
             }
 
             else if type == NSDate.self || type == Optional<NSDate>.self {
-                let formatter = self.dynamicType.dateFormatterForKey(key)
+                let formatter = self.dynamicType.dateFormatterForKey(key) ?? SuperModel.defaultDateFormatter
                 if let date = formatter.dateFromString(value as! String) {
                     super.setValue(date, forKey: key)
                 }
@@ -247,6 +247,7 @@ public class SuperModel: NSObject {
                 // Date
                 else if let date = value as? NSDate {
                     let formatter = self.dynamicType.dateFormatterForKey(property.name)
+                        ?? SuperModel.defaultDateFormatter
                     dictionary[property.name] = formatter.stringFromDate(date)
                 }
 
@@ -273,6 +274,7 @@ public class SuperModel: NSObject {
 
     private struct Shared {
         static let numberFormatter = NSNumberFormatter()
+        static let dateFormatter = NSDateFormatter()
     }
 
     public class func numberFromString(string: String) -> Number? {
@@ -282,5 +284,7 @@ public class SuperModel: NSObject {
         }
         return formatter.numberFromString(string)
     }
+
+    public static let defaultDateFormatter: NSDateFormatter = Shared.dateFormatter
 
 }
