@@ -143,17 +143,22 @@ public class SuperModel: NSObject {
         }
     }
 
-    public class func fromList(list: [Dict]) -> [SuperModel] {
-        return list.map { self.init($0) }
+    public class func fromList(list: AnyObject?) -> [SuperModel] {
+        if let list = list as? [Dict] {
+            return list.map { self.init($0) }
+        }
+        return []
     }
 
-    public convenience init(_ dictionary: Dict) {
+    public convenience init(_ dictionary: AnyObject) {
         self.init()
         self.update(dictionary)
     }
 
-    public func update(dictionary: Dict) {
-        self.setValuesForKeysWithDictionary(dictionary)
+    public func update(dictionary: AnyObject) {
+        if let dictionary = dictionary as? Dict {
+            self.setValuesForKeysWithDictionary(dictionary)
+        }
     }
 
     public override func setValue(value: AnyObject?, forKey key: String) {
