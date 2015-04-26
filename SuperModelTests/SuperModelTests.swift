@@ -56,6 +56,10 @@ class Post: SuperModel {
     var createdAt: NSDate?
     var publishedAt: NSDate?
     var authorName: String?
+    var placeName: String?
+    var placeLatitude: Number?
+    var placeLongitude: Number?
+    var URLString: String?
 
     override class func dateFormatterForKey(key: String) -> NSDateFormatter? {
         if key == "createdAt" {
@@ -64,6 +68,15 @@ class Post: SuperModel {
             return formatter
         }
         return nil
+    }
+
+    override class func keyPathForKeys() -> [String: String]? {
+        return [
+            "URLString": "url",
+            "placeName": "place.name",
+            "placeLatitude": "place.location.latitude",
+            "placeLongitude": "place.location.longitude",
+        ]
     }
 }
 
@@ -238,5 +251,48 @@ class SuperModelTests: XCTestCase {
         let user = User(dict)
         XCTAssertEqual(user.toDictionary(), dict)
     }
-    
+
+    func testKeyPathForKeys() {
+        let dict: Dict = [
+            "id": 999,
+            "title": "The Title",
+            "url": "http://xoul.kr"
+        ]
+        let post = Post(dict)
+        XCTAssertEqual(post.URLString!, "http://xoul.kr")
+    }
+
+    func testKeyPathForKeys_depth2() {
+        let dict: Dict = [
+            "id": 999,
+            "title": "The Title",
+            "place": [
+                "name": "Starbucks",
+                "location": [
+                    "latitude": 1.23,
+                    "longitude": 2.34
+                ]
+            ]
+        ]
+        let post = Post(dict)
+        XCTAssertEqual(post.placeName!, "Starbucks")
+    }
+
+    func testKeyPathForKeys_depth3() {
+        let dict: Dict = [
+            "id": 999,
+            "title": "The Title",
+            "place": [
+                "name": "Starbucks",
+                "location": [
+                    "latitude": 1.23,
+                    "longitude": 2.34
+                ]
+            ]
+        ]
+        let post = Post(dict)
+        XCTAssertEqual(post.placeLatitude!, 1.23)
+        XCTAssertEqual(post.placeLongitude!, 2.34)
+    }
+
 }

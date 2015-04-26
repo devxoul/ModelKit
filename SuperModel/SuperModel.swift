@@ -98,6 +98,10 @@ public class SuperModel: NSObject {
         return self.defaultDateFormatter
     }
 
+    public class func keyPathForKeys() -> [String: String]? {
+        return nil
+    }
+
 
     internal var properties: [Property] {
         if let cachedProperties = self.dynamicType.cachedProperties {
@@ -158,6 +162,39 @@ public class SuperModel: NSObject {
     public func update(dictionary: AnyObject) {
         if let dictionary = dictionary as? Dict {
             self.setValuesForKeysWithDictionary(dictionary)
+        }
+    }
+
+    public override func setValuesForKeysWithDictionary(keyedValues: [NSObject : AnyObject]) {
+        for (key, value) in keyedValues {
+            if let key = key as? String {
+                self.setValue(value, forKey: key)
+
+                if let keyPaths = self.dynamicType.keyPathForKeys() {
+                    for (property, keyPath) in keyPaths {
+                        if keyPath == key && property != keyPath {
+                            self.setValue(value, forKey: property)
+                        }
+
+                        else if keyPath.hasPrefix(key + ".") {
+                            var dictKeys = keyPath.componentsSeparatedByString(".")
+                            dictKeys.removeAtIndex(0)
+
+                            var valueForKeyPath: AnyObject? = value
+                            while count(dictKeys) > 0 {
+                                let newValue: AnyObject? = valueForKeyPath?[dictKeys.first!]
+                                if newValue == nil {
+                                    break
+                                }
+                                valueForKeyPath = newValue
+                                dictKeys.removeAtIndex(0)
+                            }
+
+                            self.setValue(valueForKeyPath, forKey: property)
+                        }
+                    } // end for
+                } // end if-let keyPaths
+            } // end if-let key
         }
     }
 
