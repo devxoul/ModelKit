@@ -16,27 +16,15 @@ import SuperModel
     case Male
     case Female
 
-    var stringValue: String {
-        switch self {
-        case .Unknown: return "unknown"
-        case .Male: return "male"
-        case .Female: return "female"
-        }
+    var rawValues: [Int: String] {
+        return [
+            0: "unknown",
+            1: "male",
+            2: "female",
+        ]
     }
 
-    func fromInt(int: Int) -> Gender {
-        return Gender(rawValue: int) ?? .Unknown
-    }
-
-    func fromString(string: String) -> Gender {
-        switch string {
-        case "male": return Gender.Male
-        case "female": return Gender.Female
-        default: return Gender.Unknown
-        }
-    }
-
-    var description: String { return self.stringValue.capitalizedString }
+    var description: String { return self.rawValues[self.rawValue]!.capitalizedString }
 }
 
 class User: SuperModel {

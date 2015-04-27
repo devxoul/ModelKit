@@ -37,12 +37,10 @@ public func == (lhs: SuperEnum.Type, rhs: SuperEnum.Type) -> Bool {
 
 public protocol SuperEnum {
     var rawValue: Int { get }
-    func fromInt(int: Int) -> Self
 }
 
 public protocol StringEnum: SuperEnum {
-    var stringValue: String { get }
-    func fromString(string: String) -> Self
+    var rawValues: [Int: String] { get }
 }
 
 
@@ -259,8 +257,12 @@ public class SuperModel: NSObject {
             // String Enum
             else if let defaultValue = property.defaultValue as? StringEnum,
                         stringValue = (value as? String) ?? (value as? NSNumber)?.stringValue {
-                let enumValue = defaultValue.fromString(value as! String)
-                super.setValue(enumValue.rawValue, forKey: key)
+                for (raw, string) in defaultValue.rawValues {
+                    if string == stringValue {
+                        super.setValue(raw, forKey: key)
+                        break
+                    }
+                }
             }
 
             // Integer Enum
@@ -308,7 +310,12 @@ public class SuperModel: NSObject {
 
                 // String Enum
                 else if let defaultValue = property.defaultValue as? StringEnum {
-                    dictionary[property.name] = defaultValue.fromInt(value as! Int).stringValue
+                    for (raw, string) in defaultValue.rawValues {
+                        if raw == value as! Int {
+                            dictionary[property.name] = string
+                            break
+                        }
+                    }
                 }
 
                 // Integer Enum
@@ -325,6 +332,10 @@ public class SuperModel: NSObject {
             }
         }
         return dictionary
+    }
+
+    override public func setValue(value: AnyObject?, forUndefinedKey key: String) {
+        println("setValue:\(value) forUndefinedKey: \(key)")
     }
 
     private struct Shared {
