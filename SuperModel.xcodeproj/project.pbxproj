@@ -11,6 +11,7 @@
 		0358B13D1AD868130095D8A7 /* SuperModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0358B1311AD868130095D8A7 /* SuperModel.framework */; };
 		0358B1441AD868130095D8A7 /* SuperModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0358B1431AD868130095D8A7 /* SuperModelTests.swift */; };
 		0358B14E1AD8682A0095D8A7 /* SuperModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0358B14D1AD8682A0095D8A7 /* SuperModel.swift */; };
+		03AD2CB71AEE5EC70016426E /* GitHubTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AD2CB61AEE5EC70016426E /* GitHubTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +32,7 @@
 		0358B1421AD868130095D8A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0358B1431AD868130095D8A7 /* SuperModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperModelTests.swift; sourceTree = "<group>"; };
 		0358B14D1AD8682A0095D8A7 /* SuperModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuperModel.swift; sourceTree = "<group>"; };
+		03AD2CB61AEE5EC70016426E /* GitHubTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GitHubTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +94,7 @@
 			isa = PBXGroup;
 			children = (
 				0358B1431AD868130095D8A7 /* SuperModelTests.swift */,
+				03AD2CB61AEE5EC70016426E /* GitHubTests.swift */,
 				0358B1411AD868130095D8A7 /* Supporting Files */,
 			);
 			path = SuperModelTests;
@@ -220,6 +223,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03AD2CB71AEE5EC70016426E /* GitHubTests.swift in Sources */,
 				0358B1441AD868130095D8A7 /* SuperModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -406,6 +410,7 @@
 				0358B1491AD868130095D8A7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		0358B14A1AD868130095D8A7 /* Build configuration list for PBXNativeTarget "SuperModelTests" */ = {
 			isa = XCConfigurationList;
@@ -414,6 +419,7 @@
 				0358B14C1AD868130095D8A7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
