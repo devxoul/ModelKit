@@ -232,6 +232,13 @@ public class SuperModel: NSObject {
                 }
             }
 
+            // URL
+            else if type == NSURL.self || type == Optional<NSURL>.self {
+                if let URLString = value as? String, URL = NSURL(string: URLString) {
+                    super.setValue(URL, forKey: key)
+                }
+            }
+
             // List
             else if let modelClass = property.modelClass where property.isArray {
                 if let array = value as? [Dict] {
@@ -291,6 +298,11 @@ public class SuperModel: NSObject {
                     let formatter = self.dynamicType.dateFormatterForKey(property.name)
                         ?? SuperModel.defaultDateFormatter
                     dictionary[property.name] = formatter.stringFromDate(date)
+                }
+
+                // URL
+                else if let URL = value as? NSURL {
+                    dictionary[property.name] = URL.absoluteString
                 }
 
                 // String Enum

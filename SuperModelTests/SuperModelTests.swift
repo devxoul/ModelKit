@@ -60,6 +60,7 @@ class Post: SuperModel {
     var placeLatitude: Number?
     var placeLongitude: Number?
     var URLString: String?
+    var URL: NSURL?
 
     override class func dateFormatterForKey(key: String) -> NSDateFormatter? {
         if key == "createdAt" {
@@ -73,6 +74,7 @@ class Post: SuperModel {
     override class func keyPathForKeys() -> [String: String]? {
         return [
             "URLString": "url",
+            "URL": "url",
             "placeName": "place.name",
             "placeLatitude": "place.location.latitude",
             "placeLongitude": "place.location.longitude",
@@ -192,6 +194,16 @@ class SuperModelTests: XCTestCase {
         let formatter = Post.dateFormatterForKey("createdAt")
         let post = Post(dict)
         XCTAssertEqual(formatter!.stringFromDate(post.createdAt!), dict["createdAt"] as! String)
+    }
+
+    func testURL() {
+        let dict: Dict = [
+            "id": 999,
+            "title": "The Title",
+            "url": "http://xoul.kr",
+        ]
+        let post = Post(dict)
+        XCTAssertEqual(post.URL!, NSURL(string: "http://xoul.kr")!)
     }
 
     func testDefaultDate() {
