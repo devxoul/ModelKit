@@ -334,6 +334,10 @@ public class SuperModel: NSObject {
         return dictionary
     }
 
+    public class func arrayFromModels(models: [SuperModel]) -> [Dict] {
+        return models.map { $0.toDictionary() }
+    }
+
     override public func setValue(value: AnyObject?, forUndefinedKey key: String) {
         println("setValue:\(value) forUndefinedKey: \(key)")
     }
