@@ -92,12 +92,12 @@ internal class Property: Printable {
 
 public class SuperModel: NSObject {
 
-    public class func dateFormatterForKey(key: String) -> NSDateFormatter? {
-        return self.defaultDateFormatter
-    }
-
     public class func keyPathForKeys() -> [String: String]? {
         return nil
+    }
+
+    public class func dateFormatterForKey(key: String) -> NSDateFormatter? {
+        return self.defaultDateFormatter
     }
 
 

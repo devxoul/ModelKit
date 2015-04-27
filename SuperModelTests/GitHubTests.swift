@@ -69,6 +69,13 @@ class GHMilestone: SuperModel {
             "descriptionText": "description",
         ]
     }
+
+    override class func dateFormatterForKey(key: String) -> NSDateFormatter? {
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        return dateFormatter
+    }
 }
 
 
