@@ -226,7 +226,7 @@ public class SuperModel: NSObject {
             // Date
             else if type == NSDate.self || type == Optional<NSDate>.self {
                 let formatter = self.dynamicType.dateFormatterForKey(key) ?? SuperModel.defaultDateFormatter
-                if let date = formatter.dateFromString(value as! String) {
+                if let stringValue = value as? String, date = formatter.dateFromString(stringValue) {
                     super.setValue(date, forKey: key)
                 }
             }
