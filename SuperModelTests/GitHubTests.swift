@@ -209,7 +209,7 @@ class GitHubTests: XCTestCase {
     ]
 
     func testTest() {
-        let issues = GHIssue.fromList(JSON) as! [GHIssue]
+        let issues = GHIssue.fromArray(JSON) as! [GHIssue]
         XCTAssertEqual(count(issues), 1)
 
         let issue = issues.first!

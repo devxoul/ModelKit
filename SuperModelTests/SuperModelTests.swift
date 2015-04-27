@@ -117,7 +117,7 @@ class SuperModelTests: XCTestCase {
                 "name": 132,
             ],
         ]
-        let users = User.fromList(response) as! [User]
+        let users = User.fromArray(response) as! [User]
         XCTAssertEqual(users.count, 2)
         XCTAssertEqual(users[0].id, 123)
         XCTAssertEqual(users[0].name, "devxoul")

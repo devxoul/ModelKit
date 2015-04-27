@@ -145,9 +145,9 @@ public class SuperModel: NSObject {
         }
     }
 
-    public class func fromList(list: AnyObject?) -> [SuperModel] {
-        if let list = list as? [Dict] {
-            return list.map { self.init($0) }
+    public class func fromArray(array: AnyObject?) -> [SuperModel] {
+        if let array = array as? [Dict] {
+            return array.map { self.init($0) }
         }
         return []
     }
@@ -241,7 +241,7 @@ public class SuperModel: NSObject {
             // List
             else if let modelClass = property.modelClass where property.isArray {
                 if let array = value as? [Dict] {
-                    let models = modelClass.fromList(array)
+                    let models = modelClass.fromArray(array)
                     super.setValue(models, forKey: key)
                 }
             }
