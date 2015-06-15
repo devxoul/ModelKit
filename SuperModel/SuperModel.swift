@@ -145,6 +145,17 @@ public class SuperModel: NSObject {
         }
     }
 
+    public class func propertySetterNameForKey(key: String) -> String {
+        if isEmpty(key) {
+            return key
+        }
+        let range = key.startIndex..<advance(key.startIndex, 1)
+        let uppercase = key.substringWithRange(range).uppercaseString
+        let name = "set" + key.stringByReplacingCharactersInRange(range, withString: uppercase) + ":"
+        return name
+    }
+
+
     public class func fromArray(array: AnyObject?) -> [SuperModel] {
         if let array = array as? [Dict] {
             return array.map { self.init($0) }
@@ -197,6 +208,11 @@ public class SuperModel: NSObject {
     }
 
     public override func setValue(value: AnyObject?, forKey key: String) {
+        let setter = self.dynamicType.propertySetterNameForKey(key)
+        if !self.respondsToSelector(Selector(setter)) {
+            return self.setValue(value, forUndefinedKey: key)
+        }
+
         if let property = self.properties.filter({ $0.name == key }).first {
             if value == nil {
                 super.setValue(value, forKey: key)
@@ -281,6 +297,10 @@ public class SuperModel: NSObject {
         }
     }
 
+    override public func setValue(value: AnyObject?, forUndefinedKey key: String) {
+        // implement in subclass if needed
+    }
+
     public func toDictionary(nulls: Bool = false) -> Dict {
         var dictionary = Dict()
         for property in self.properties {
@@ -336,10 +356,6 @@ public class SuperModel: NSObject {
 
     public class func arrayFromModels(models: [SuperModel]) -> [Dict] {
         return models.map { $0.toDictionary() }
-    }
-
-    override public func setValue(value: AnyObject?, forUndefinedKey key: String) {
-        println("setValue:\(value) forUndefinedKey: \(key)")
     }
 
     private struct Shared {
