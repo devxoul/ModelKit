@@ -309,4 +309,11 @@ class SuperModelTests: XCTestCase {
         XCTAssertEqual(post.placeLongitude!, 2.34)
     }
 
+    func testSetterNameForKey() {
+        XCTAssertEqual(SuperModel.propertySetterNameForKey(""), "")
+        XCTAssertEqual(SuperModel.propertySetterNameForKey(":"), "set::")
+        XCTAssertEqual(SuperModel.propertySetterNameForKey("name"), "setName:")
+        XCTAssertEqual(SuperModel.propertySetterNameForKey("_privateName"), "set_privateName:")
+    }
+
 }
