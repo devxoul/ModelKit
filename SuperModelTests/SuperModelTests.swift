@@ -30,7 +30,7 @@ import SuperModel
     case Male
     case Female
 
-    var rawValues: [Int: String] {
+    var rawValues: [Int: String?] {
         return [
             0: "unknown",
             1: "male",
@@ -38,7 +38,9 @@ import SuperModel
         ]
     }
 
-    var description: String { return self.rawValues[self.rawValue]!.capitalizedString }
+    var description: String {
+        return self.rawValues[self.rawValue]!?.capitalizedString ?? "unknown"
+    }
 }
 
 class User: SuperModel {

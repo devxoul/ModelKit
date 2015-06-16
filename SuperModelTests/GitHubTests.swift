@@ -29,7 +29,7 @@ import XCTest
     case Open
     case Closed
 
-    var rawValues: [Int: String] {
+    var rawValues: [Int: String?] {
         return [
             GHState.Open.rawValue: "open",
             GHState.Closed.rawValue: "closed",

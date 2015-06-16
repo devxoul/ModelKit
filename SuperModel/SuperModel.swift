@@ -40,7 +40,7 @@ public protocol SuperEnum {
 }
 
 public protocol StringEnum: SuperEnum {
-    var rawValues: [Int: String] { get }
+    var rawValues: [Int: String?] { get }
 }
 
 
