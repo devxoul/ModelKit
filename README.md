@@ -1,6 +1,8 @@
 SuperModel
 ==========
 
+[![CocoaPods](http://img.shields.io/cocoapods/v/SuperModel.svg?style=flat)](https://cocoapods.org/pods/SuperModel)
+
 Model framework for Swift.
 
 
@@ -49,6 +51,31 @@ class GHIssue: SuperModel {
         return dateFormatter
     }
 }
+```
+
+
+Installation
+------------
+
+### iOS 8+
+
+Use [CocoaPods](https://cocoapods.org). Minimum required version of CocoaPods is 0.36, which supports Swift frameworks.
+
+**Podfile**
+
+```ruby
+pod 'SuperModel'
+```
+
+
+### iOS 7
+
+I recommend you to try [CocoaSeeds](https://github.com/devxoul/CocoaSeeds), which uses source code instead of dynamic framework.
+
+**Seedfile**
+
+```ruby
+github 'devxoul/SuperModel', '0.0.2', :files => 'SuperModel/SuperModel.swift'
 ```
 
 
