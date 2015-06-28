@@ -6,6 +6,15 @@ SuperModel
 Model framework for Swift.
 
 
+Feautres
+--------
+
+* [JSON Mapping](#json-mapping)
+* [Optional Support](#optionals)
+* [Enum Support](#enums)
+* [Relationship](#relationship)
+
+
 At a Glance
 -----------
 
@@ -25,10 +34,10 @@ Let's assume that we use [GitHub Issues API](https://developer.github.com/v3/iss
 }
 
 class GHIssue: SuperModel {
-    var id: NSNumber!
+    var id: Int!
     var URL: NSURL!
     var HTMLURL: NSURL!
-    var number: NSNumber!
+    var number: Int!
     var state: GHState = .Closed // enum must have a default value
     var title: String!
     var body: String!
@@ -79,20 +88,76 @@ github 'devxoul/SuperModel', '0.0.2', :files => 'SuperModel/SuperModel.swift'
 ```
 
 
-Models from JSON
-----------------
+JSON Mapping
+------------
 
-#### Single Model
+#### Initialize Single Object from JSON Dictionary
 
 ```swift
 let issue = GHIssue(JSONDictionary)
 ```
 
-#### Array of Model
+#### Initialize Objects from JSON Array
 
 ```swift
 let issues = GHIssue.fromArray(JSONArray) as! [GHIssue]
 ```
+
+#### Property from JSON KeyPaths
+
+```json
+{
+    "id": 123,
+    "author": {
+        "id": 456,
+        "name": "Suyeol Jeon",
+        "nickname": "devxoul"
+    }
+}
+```
+
+```swift
+class Post: SuperModel {
+    var id: Int!
+    var authorID: Int! // will be `456`
+    var authorNickname: String? // will be `devxoul`
+
+    override class func keyPathForKeys() -> [String: String]? {
+        return [
+            "authorID": "author.id",
+            "authorNickname": "author.nickname",
+        ]
+    }
+```
+
+
+#### Object Serializing
+
+```json
+    let post = Post(JSONDictionary)
+    post.toDictionary() // will return JSON dictionary
+```
+
+
+Optionals
+---------
+
+SuperModel fully supports Optional. No more `NSNumber`, and no more initialized properties.
+
+```swift
+class HealthData: SuperModel {
+    var birthyear: Int?
+    var weight: Float?
+}
+
+let health = HelathData(...)
+if let weight = health.weight {
+    ...
+}
+```
+
+> **Note:** SuperModel isn't compatible with Objective-C if you're using primitive type optionals. (e.g. `Int?`, `Float!`, `Bool?`) Because those are not converted to Objective-C.
+
 
 
 Enums
@@ -128,6 +193,19 @@ SuperModel supports enums with limitation of Swift. There are two kinds of enums
             GHState.Closed.rawValue: "closed",
         ]
     }
+}
+```
+
+
+Relationship
+------------
+
+You can define replationships between models.
+
+```swift
+class Post: SuperModel {
+    var author: User!
+    var comments: [Comment]?
 }
 ```
 
