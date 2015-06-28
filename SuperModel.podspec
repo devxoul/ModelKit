@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "SuperModel"
-  s.version      = "0.0.2"
+  s.version      = "0.0.3"
   s.summary      = "Model framework for Swift"
   s.homepage     = "http://github.com/devxoul/SuperModel"
   s.license      = { :type => 'MIT', :file => 'LICENSE' }
