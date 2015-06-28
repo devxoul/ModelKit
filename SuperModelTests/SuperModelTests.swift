@@ -44,16 +44,18 @@ import SuperModel
 }
 
 class User: SuperModel {
-    var id: Number!
+    var id: Int!
     var name: String!
     var gender: Gender = .Unknown // enums must have a default value
     var bio: String?
     var city: String! = "Seoul"
     var posts: [Post]?
+    var height: Float?
+    var alive: Bool?
 }
 
 class Post: SuperModel {
-    var id: Number!
+    var id: Int!
     var title: String!
     var content: String?
     var author: User?
@@ -61,8 +63,8 @@ class Post: SuperModel {
     var publishedAt: NSDate?
     var authorName: String?
     var placeName: String?
-    var placeLatitude: Number?
-    var placeLongitude: Number?
+    var placeLatitude: Float?
+    var placeLongitude: Float?
     var URLString: String?
     var URL: NSURL?
 
@@ -113,11 +115,11 @@ class SuperModelTests: XCTestCase {
 
     func testExample2() {
         let dict = [
-            "id": "1,300.123",
+            "id": "1,300",
             "name": 132,
         ]
         let user = User(dict)
-        XCTAssertEqual(user.id, 1300.123)
+        XCTAssertEqual(user.id, 1300)
         XCTAssertEqual(user.name, "132")
     }
 
@@ -129,7 +131,7 @@ class SuperModelTests: XCTestCase {
                 "bio": NSNull(),
             ],
             [
-                "id": "1,300.123",
+                "id": "1,300",
                 "name": 132,
             ],
         ]
@@ -137,7 +139,7 @@ class SuperModelTests: XCTestCase {
         XCTAssertEqual(users.count, 2)
         XCTAssertEqual(users[0].id, 123)
         XCTAssertEqual(users[0].name, "devxoul")
-        XCTAssertEqual(users[1].id, 1300.123)
+        XCTAssertEqual(users[1].id, 1300)
         XCTAssertEqual(users[1].name, "132")
     }
 
@@ -316,6 +318,23 @@ class SuperModelTests: XCTestCase {
         XCTAssertEqual(SuperModel.propertySetterNameForKey(":"), "set::")
         XCTAssertEqual(SuperModel.propertySetterNameForKey("name"), "setName:")
         XCTAssertEqual(SuperModel.propertySetterNameForKey("_privateName"), "set_privateName:")
+    }
+
+    func testNumberOptional() {
+        let dict = [
+            "height": 123.4,
+        ]
+        let user = User(dict)
+        XCTAssertEqual(user.height ?? 0, 123.4)
+        XCTAssertNil(user.alive)
+    }
+
+    func testNumberOptional2() {
+        let dict = [
+            "alive": true,
+        ]
+        let user = User(dict)
+        XCTAssertEqual(user.alive ?? false, true)
     }
 
 }
