@@ -208,18 +208,105 @@ public class SuperModel: NSObject {
     }
 
     public override func setValue(value: AnyObject?, forKey key: String) {
-        let setter = self.dynamicType.propertySetterNameForKey(key)
-        if !self.respondsToSelector(Selector(setter)) {
-            return self.setValue(value, forUndefinedKey: key)
-        }
-
         if let property = self.properties.filter({ $0.name == key }).first {
-            if value == nil {
-                super.setValue(value, forKey: key)
-                return
-            }
-
             let type = property.type
+
+            // if model doesn't have setter method for key
+            if !self.respondsToSelector(Selector(self.dynamicType.propertySetterNameForKey(key))) {
+
+                // if model doesn't have ivar - it's undefined key
+                let ivar = class_getInstanceVariable(self.dynamicType, key)
+                if ivar.hashValue == 0 {
+                    return self.setValue(value, forUndefinedKey: key)
+                }
+
+                // memory address for ivar
+                let address = ObjectIdentifier(self).uintValue + UInt(ivar_getOffset(ivar))
+
+                if type == Int.self || type == Optional<Int>.self {
+                    let pointer = UnsafeMutablePointer<Int?>(bitPattern: address)
+                    pointer.memory = self.dynamicType.numberFromValue(value)?.integerValue
+                    return
+                }
+
+                if type == Int8.self || type == Optional<Int8>.self {
+                    let pointer = UnsafeMutablePointer<Int8?>(bitPattern: address)
+                    pointer.memory = self.dynamicType.numberFromValue(value)?.charValue
+                    return
+                }
+
+                if type == Int16.self || type == Optional<Int16>.self {
+                    let pointer = UnsafeMutablePointer<Int16?>(bitPattern: address)
+                    pointer.memory = self.dynamicType.numberFromValue(value)?.shortValue
+                    return
+                }
+
+                if type == Int32.self || type == Optional<Int32>.self {
+                    let pointer = UnsafeMutablePointer<Int32?>(bitPattern: address)
+                    pointer.memory = self.dynamicType.numberFromValue(value)?.intValue
+                    return
+                }
+
+                if type == Int64.self || type == Optional<Int64>.self {
+                    let pointer = UnsafeMutablePointer<Int64?>(bitPattern: address)
+                    pointer.memory = self.dynamicType.numberFromValue(value)?.longLongValue
+                    return
+                }
+
+                if type == UInt.self || type == Optional<UInt>.self {
+                    let pointer = UnsafeMutablePointer<UInt?>(bitPattern: address)
+                    pointer.memory = self.dynamicType.numberFromValue(value)?.unsignedLongValue
+                    return
+                }
+
+                if type == UInt8.self || type == Optional<UInt8>.self {
+                    let pointer = UnsafeMutablePointer<UInt8?>(bitPattern: address)
+                    pointer.memory = self.dynamicType.numberFromValue(value)?.unsignedCharValue
+                    return
+                }
+
+                if type == UInt16.self || type == Optional<UInt16>.self {
+                    let pointer = UnsafeMutablePointer<UInt16?>(bitPattern: address)
+                    pointer.memory = self.dynamicType.numberFromValue(value)?.unsignedShortValue
+                    return
+                }
+                
+                if type == UInt32.self || type == Optional<UInt32>.self {
+                    let pointer = UnsafeMutablePointer<UInt32?>(bitPattern: address)
+                    pointer.memory = self.dynamicType.numberFromValue(value)?.unsignedIntValue
+                    return
+                }
+                
+                if type == UInt64.self || type == Optional<UInt64>.self {
+                    let pointer = UnsafeMutablePointer<UInt64?>(bitPattern: address)
+                    pointer.memory = self.dynamicType.numberFromValue(value)?.unsignedLongLongValue
+                    return
+                }
+
+                if type == Float.self || type == Optional<Float>.self {
+                    let pointer = UnsafeMutablePointer<Float?>(bitPattern: address)
+                    pointer.memory = self.dynamicType.numberFromValue(value)?.floatValue
+                    return
+                }
+
+                if type == Double.self || type == Optional<Double>.self {
+                    let pointer = UnsafeMutablePointer<Double?>(bitPattern: address)
+                    pointer.memory = self.dynamicType.numberFromValue(value)?.doubleValue
+                    return
+                }
+
+                if type == CGFloat.self || type == Optional<CGFloat>.self {
+                    let pointer = UnsafeMutablePointer<CGFloat?>(bitPattern: address)
+                    pointer.memory = self.dynamicType.numberFromValue(value) as? CGFloat
+                    return
+                }
+
+                if type == Bool.self || type == Optional<Bool>.self {
+                    let pointer = UnsafeMutablePointer<Bool?>(bitPattern: address)
+                    pointer.memory = self.dynamicType.numberFromValue(value)?.boolValue
+                    return
+                }
+            }
 
             // String
             if type == String.self || type == Optional<String>.self {
@@ -231,12 +318,8 @@ public class SuperModel: NSObject {
             }
 
             // Number
-            else if type == Number.self || type == Optional<Number>.self {
-                if let value = value as? Number {
-                    super.setValue(value, forKey: key)
-                } else if let value = value as? String, number = self.dynamicType.numberFromString(value) {
-                    super.setValue(number, forKey: key)
-                }
+            else if type == NSNumber.self || type == Optional<NSNumber>.self {
+                super.setValue(self.dynamicType.numberFromValue(value), forKey: key)
             }
 
             // Date
@@ -283,11 +366,7 @@ public class SuperModel: NSObject {
 
             // Integer Enum
             else if let enumType = property.type as? SuperEnum.Type {
-                if let rawValue = value as? NSNumber {
-                    super.setValue(rawValue, forKey: key)
-                } else if let string = value as? String, rawValue = self.dynamicType.numberFromString(string) {
-                    super.setValue(rawValue, forKey: key)
-                }
+                super.setValue(self.dynamicType.numberFromValue(value), forKey: key)
             }
 
             // What else?
@@ -299,6 +378,86 @@ public class SuperModel: NSObject {
 
     override public func setValue(value: AnyObject?, forUndefinedKey key: String) {
         // implement in subclass if needed
+    }
+
+    override public func valueForKey(key: String) -> AnyObject? {
+        if !self.respondsToSelector(Selector(key)) {
+            let ivar = class_getInstanceVariable(self.dynamicType, key)
+            if let type = self.properties.filter({ $0.name == key }).first?.type where ivar.hashValue != 0 {
+                let address = ObjectIdentifier(self).uintValue + UInt(ivar_getOffset(ivar))
+
+                if type == Int.self || type == Optional<Int>.self {
+                    let pointer = UnsafeMutablePointer<Int?>(bitPattern: address)
+                    return pointer.memory
+                }
+
+                if type == Int8.self || type == Optional<Int8>.self {
+                    let pointer = UnsafeMutablePointer<Int8?>(bitPattern: address)
+                    return pointer.memory as? AnyObject
+                }
+
+                if type == Int16.self || type == Optional<Int16>.self {
+                    let pointer = UnsafeMutablePointer<Int16?>(bitPattern: address)
+                    return pointer.memory as? AnyObject
+                }
+
+                if type == Int32.self || type == Optional<Int32>.self {
+                    let pointer = UnsafeMutablePointer<Int32?>(bitPattern: address)
+                    return pointer.memory as? AnyObject
+                }
+
+                if type == Int64.self || type == Optional<Int64>.self {
+                    let pointer = UnsafeMutablePointer<Int64?>(bitPattern: address)
+                    return pointer.memory as? AnyObject
+                }
+
+                if type == UInt.self || type == Optional<UInt>.self {
+                    let pointer = UnsafeMutablePointer<UInt?>(bitPattern: address)
+                    return pointer.memory
+                }
+
+                if type == UInt8.self || type == Optional<UInt8>.self {
+                    let pointer = UnsafeMutablePointer<UInt8?>(bitPattern: address)
+                    return pointer.memory as? AnyObject
+                }
+
+                if type == UInt16.self || type == Optional<UInt16>.self {
+                    let pointer = UnsafeMutablePointer<UInt16?>(bitPattern: address)
+                    return pointer.memory as? AnyObject
+                }
+
+                if type == UInt32.self || type == Optional<UInt32>.self {
+                    let pointer = UnsafeMutablePointer<UInt32?>(bitPattern: address)
+                    return pointer.memory as? AnyObject
+                }
+
+                if type == UInt64.self || type == Optional<UInt64>.self {
+                    let pointer = UnsafeMutablePointer<UInt64?>(bitPattern: address)
+                    return pointer.memory as? AnyObject
+                }
+
+                if type == Float.self || type == Optional<Float>.self {
+                    let pointer = UnsafeMutablePointer<Float?>(bitPattern: address)
+                    return pointer.memory
+                }
+
+                if type == Double.self || type == Optional<Double>.self {
+                    let pointer = UnsafeMutablePointer<Double?>(bitPattern: address)
+                    return pointer.memory
+                }
+
+                if type == CGFloat.self || type == Optional<CGFloat>.self {
+                    let pointer = UnsafeMutablePointer<CGFloat?>(bitPattern: address)
+                    return pointer.memory
+                }
+
+                if type == Bool.self || type == Optional<Bool>.self {
+                    let pointer = UnsafeMutablePointer<Bool?>(bitPattern: address)
+                    return pointer.memory
+                }
+            }
+        }
+        return super.valueForKey(key)
     }
 
     public func toDictionary(nulls: Bool = false) -> Dict {
@@ -363,14 +522,16 @@ public class SuperModel: NSObject {
         static let dateFormatter = NSDateFormatter()
     }
 
-    public class func numberFromString(string: String) -> Number? {
-        let formatter = Shared.numberFormatter
-        if formatter.numberStyle != .DecimalStyle {
-            formatter.numberStyle = .DecimalStyle
+    public class func numberFromValue(value: AnyObject?) -> Number? {
+        if let value = value as? NSNumber {
+            return value
         }
-        return formatter.numberFromString(string)
+        if let string = value as? String {
+            Shared.numberFormatter.numberStyle = .DecimalStyle
+            return Shared.numberFormatter.numberFromString(string)
+        }
+        return nil
     }
 
     public static let defaultDateFormatter: NSDateFormatter = Shared.dateFormatter
-
 }
