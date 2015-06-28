@@ -23,10 +23,6 @@
 import Foundation
 
 
-public typealias Number = NSNumber
-public typealias Dict = [String: NSObject]
-
-
 public func == (lhs: Any.Type, rhs: Any.Type) -> Bool {
     return ObjectIdentifier(lhs).hashValue == ObjectIdentifier(rhs).hashValue
 }
@@ -157,7 +153,7 @@ public class SuperModel: NSObject {
 
 
     public class func fromArray(array: AnyObject?) -> [SuperModel] {
-        if let array = array as? [Dict] {
+        if let array = array as? [[String: NSObject]] {
             return array.map { self.init($0) }
         }
         return []
@@ -169,7 +165,7 @@ public class SuperModel: NSObject {
     }
 
     public func update(dictionary: AnyObject) {
-        if let dictionary = dictionary as? Dict {
+        if let dictionary = dictionary as? [String: NSObject] {
             self.setValuesForKeysWithDictionary(dictionary)
         }
     }
@@ -312,7 +308,7 @@ public class SuperModel: NSObject {
             if type == String.self || type == Optional<String>.self {
                 if let value = value as? String {
                     super.setValue(value, forKey: key)
-                } else if let value = value as? Number {
+                } else if let value = value as? NSNumber {
                     super.setValue(value.stringValue, forKey: key)
                 }
             }
@@ -339,7 +335,7 @@ public class SuperModel: NSObject {
 
             // List
             else if let modelClass = property.modelClass where property.isArray {
-                if let array = value as? [Dict] {
+                if let array = value as? [[String: NSObject]] {
                     let models = modelClass.fromArray(array)
                     super.setValue(models, forKey: key)
                 }
@@ -347,7 +343,7 @@ public class SuperModel: NSObject {
 
             // Relationship
             else if let modelClass = property.modelClass {
-                if let dict = value as? Dict {
+                if let dict = value as? [String: NSObject] {
                     let model = modelClass.init(dict)
                     super.setValue(model, forKey: key)
                 }
@@ -460,8 +456,8 @@ public class SuperModel: NSObject {
         return super.valueForKey(key)
     }
 
-    public func toDictionary(nulls: Bool = false) -> Dict {
-        var dictionary = Dict()
+    public func toDictionary(nulls: Bool = false) -> [String: NSObject] {
+        var dictionary = [String: NSObject]()
         for property in self.properties {
             if let value: AnyObject = self.valueForKey(property.name) {
 
@@ -513,7 +509,7 @@ public class SuperModel: NSObject {
         return dictionary
     }
 
-    public class func arrayFromModels(models: [SuperModel]) -> [Dict] {
+    public class func arrayFromModels(models: [SuperModel]) -> [[String: NSObject]] {
         return models.map { $0.toDictionary() }
     }
 
@@ -522,7 +518,7 @@ public class SuperModel: NSObject {
         static let dateFormatter = NSDateFormatter()
     }
 
-    public class func numberFromValue(value: AnyObject?) -> Number? {
+    public class func numberFromValue(value: AnyObject?) -> NSNumber? {
         if let value = value as? NSNumber {
             return value
         }

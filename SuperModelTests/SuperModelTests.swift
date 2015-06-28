@@ -144,7 +144,7 @@ class SuperModelTests: XCTestCase {
     }
 
     func testRelationship() {
-        let dict: Dict = [
+        let dict: [String: NSObject] = [
             "id": 999,
             "title": "The Title",
             "author": [
@@ -158,7 +158,7 @@ class SuperModelTests: XCTestCase {
     }
 
     func testRelationshipList() {
-        let dict: Dict = [
+        let dict: [String: NSObject] = [
             "id": 123,
             "name": "devxoul",
             "posts": [
@@ -181,7 +181,7 @@ class SuperModelTests: XCTestCase {
     }
 
     func testEnum() {
-        let dict: Dict = [
+        let dict: [String: NSObject] = [
             "id": 2,
             "name": "devxoul",
             "gender": "male",
@@ -191,7 +191,7 @@ class SuperModelTests: XCTestCase {
     }
 
     func testDate() {
-        let dict: Dict = [
+        let dict: [String: NSObject] = [
             "id": 999,
             "title": "The Title",
             "createdAt": "2015-01-02T14:33:55.123000+0900",
@@ -203,7 +203,7 @@ class SuperModelTests: XCTestCase {
     }
 
     func testURL() {
-        let dict: Dict = [
+        let dict: [String: NSObject] = [
             "id": 999,
             "title": "The Title",
             "url": "http://xoul.kr",
@@ -214,7 +214,7 @@ class SuperModelTests: XCTestCase {
 
     func testDefaultDate() {
         SuperModel.defaultDateFormatter.dateFormat = "yyyy-MM-dd"
-        let dict: Dict = [
+        let dict: [String: NSObject] = [
             "id": 999,
             "title": "The Title",
             "publishedAt": "2015-01-03",
@@ -234,7 +234,7 @@ class SuperModelTests: XCTestCase {
     }
 
     func testToDictionary2() {
-        let dict: Dict = [
+        let dict: [String: NSObject] = [
             "id": 999,
             "title": "The Title",
             "createdAt": "2015-01-02T14:33:55.123000+0900",
@@ -250,7 +250,7 @@ class SuperModelTests: XCTestCase {
     }
 
     func testToDictionary3() {
-        let dict: Dict = [
+        let dict: [String: NSObject] = [
             "id": 123,
             "name": "devxoul",
             "city": "Daegu",
@@ -271,7 +271,7 @@ class SuperModelTests: XCTestCase {
     }
 
     func testKeyPathForKeys() {
-        let dict: Dict = [
+        let dict: [String: NSObject] = [
             "id": 999,
             "title": "The Title",
             "url": "http://xoul.kr"
@@ -281,7 +281,7 @@ class SuperModelTests: XCTestCase {
     }
 
     func testKeyPathForKeys_depth2() {
-        let dict: Dict = [
+        let dict: [String: NSObject] = [
             "id": 999,
             "title": "The Title",
             "place": [
@@ -297,7 +297,7 @@ class SuperModelTests: XCTestCase {
     }
 
     func testKeyPathForKeys_depth3() {
-        let dict: Dict = [
+        let dict: [String: NSObject] = [
             "id": 999,
             "title": "The Title",
             "place": [
