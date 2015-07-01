@@ -66,7 +66,7 @@ internal class Property: Printable {
         return description
     }
 
-    var modelClass: SuperModel.Type? {
+    var modelClass: SwiftyModel.Type? {
         var className = self.typeDescription
         if self.isOptional {
             className = className.substringToIndex(advance(className.endIndex, -1))
@@ -77,7 +77,7 @@ internal class Property: Printable {
             let range = Range<String.Index>(start: start, end: end)
             className = className.substringWithRange(range)
         }
-        return NSClassFromString(className) as? SuperModel.Type
+        return NSClassFromString(className) as? SwiftyModel.Type
     }
 
     var description: String {
@@ -86,7 +86,7 @@ internal class Property: Printable {
 }
 
 
-public class SuperModel: NSObject {
+public class SwiftyModel: NSObject {
 
     public class func keyPathForKeys() -> [String: String]? {
         return nil
@@ -152,7 +152,7 @@ public class SuperModel: NSObject {
     }
 
 
-    public class func fromArray(array: AnyObject?) -> [SuperModel] {
+    public class func fromArray(array: AnyObject?) -> [SwiftyModel] {
         if let array = array as? [[String: NSObject]] {
             return array.map { self.init($0) }
         }
@@ -320,7 +320,7 @@ public class SuperModel: NSObject {
 
             // Date
             else if type == NSDate.self || type == Optional<NSDate>.self || toString(type) == "__NSDate" {
-                let formatter = self.dynamicType.dateFormatterForKey(key) ?? SuperModel.defaultDateFormatter
+                let formatter = self.dynamicType.dateFormatterForKey(key) ?? SwiftyModel.defaultDateFormatter
                 if let stringValue = value as? String, date = formatter.dateFromString(stringValue) {
                     super.setValue(date, forKey: key)
                 }
@@ -462,19 +462,19 @@ public class SuperModel: NSObject {
             if let value: AnyObject = self.valueForKey(property.name) {
 
                 // Model
-                if let model = value as? SuperModel {
+                if let model = value as? SwiftyModel {
                     dictionary[property.name] = model.toDictionary(nulls: nulls)
                 }
 
                 // List
-                else if let models = value as? [SuperModel] {
+                else if let models = value as? [SwiftyModel] {
                     dictionary[property.name] = models.map { $0.toDictionary(nulls: nulls) }
                 }
 
                 // Date
                 else if let date = value as? NSDate {
                     let formatter = self.dynamicType.dateFormatterForKey(property.name)
-                        ?? SuperModel.defaultDateFormatter
+                        ?? SwiftyModel.defaultDateFormatter
                     dictionary[property.name] = formatter.stringFromDate(date)
                 }
 
@@ -509,7 +509,7 @@ public class SuperModel: NSObject {
         return dictionary
     }
 
-    public class func arrayFromModels(models: [SuperModel]) -> [[String: NSObject]] {
+    public class func arrayFromModels(models: [SwiftyModel]) -> [[String: NSObject]] {
         return models.map { $0.toDictionary() }
     }
 

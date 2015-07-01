@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:SuperModel.xcodeproj">
+      location = "self:/Users/xoul/workspace/SwiftyModel/SwiftyModel.xcodeproj">
    </FileRef>
 </Workspace>

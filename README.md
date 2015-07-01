@@ -1,7 +1,7 @@
-SuperModel
+SwiftyModel
 ==========
 
-[![CocoaPods](http://img.shields.io/cocoapods/v/SuperModel.svg?style=flat)](https://cocoapods.org/pods/SuperModel)
+[![CocoaPods](http://img.shields.io/cocoapods/v/SwiftyModel.svg?style=flat)](https://cocoapods.org/pods/SwiftyModel)
 
 Model framework for Swift.
 
@@ -33,7 +33,7 @@ Let's assume that we use [GitHub Issues API](https://developer.github.com/v3/iss
     }
 }
 
-class GHIssue: SuperModel {
+class GHIssue: SwiftyModel {
     var id: Int!
     var URL: NSURL!
     var HTMLURL: NSURL!
@@ -73,7 +73,7 @@ Use [CocoaPods](https://cocoapods.org). Minimum required version of CocoaPods is
 **Podfile**
 
 ```ruby
-pod 'SuperModel'
+pod 'SwiftyModel'
 ```
 
 
@@ -84,7 +84,7 @@ I recommend you to try [CocoaSeeds](https://github.com/devxoul/CocoaSeeds), whic
 **Seedfile**
 
 ```ruby
-github 'devxoul/SuperModel', '0.0.2', :files => 'SuperModel/SuperModel.swift'
+github 'SwiftyModel/SwiftyModel', '0.0.3', :files => 'SwiftyModel/SwiftyModel.swift'
 ```
 
 
@@ -117,7 +117,7 @@ let issues = GHIssue.fromArray(JSONArray) as! [GHIssue]
 ```
 
 ```swift
-class Post: SuperModel {
+class Post: SwiftyModel {
     var id: Int!
     var authorID: Int! // will be `456`
     var authorNickname: String? // will be `devxoul`
@@ -142,10 +142,10 @@ class Post: SuperModel {
 Optionals
 ---------
 
-SuperModel fully supports Optional. No more `NSNumber`, and no more initialized properties.
+SwiftyModel fully supports Optional. No more `NSNumber`, and no more initialized properties.
 
 ```swift
-class HealthData: SuperModel {
+class HealthData: SwiftyModel {
     var birthyear: Int?
     var weight: Float?
 }
@@ -156,14 +156,14 @@ if let weight = health.weight {
 }
 ```
 
-> **Note:** SuperModel isn't compatible with Objective-C if you're using primitive type optionals. (e.g. `Int?`, `Float!`, `Bool?`) Because those are not converted to Objective-C.
+> **Note:** SwiftyModel isn't compatible with Objective-C if you're using primitive type optionals. (e.g. `Int?`, `Float!`, `Bool?`) Because those are not converted to Objective-C.
 
 
 
 Enums
 -----
 
-SuperModel supports enums with limitation of Swift. There are two kinds of enums: `SuperEnum` and `StringEnum`. `SuperEnum` described integer enums and `StringEnum` describes string enums.
+SwiftyModel supports enums with limitation of Swift. There are two kinds of enums: `SuperEnum` and `StringEnum`. `SuperEnum` described integer enums and `StringEnum` describes string enums.
 
 - Enums should be declard with `@objc` attribute.
 - Enum's raw type must be `Int` with `SuperEnum` or `StringEnum` protocol.
@@ -203,7 +203,7 @@ Relationship
 You can define replationships between models.
 
 ```swift
-class Post: SuperModel {
+class Post: SwiftyModel {
     var author: User!
     var comments: [Comment]?
 }
@@ -213,4 +213,4 @@ class Post: SuperModel {
 License
 -------
 
-SuperModel is under MIT license. See the LICENSE file for more info.
+SwiftyModel is under MIT license. See the LICENSE file for more info.

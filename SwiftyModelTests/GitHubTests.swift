@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 import UIKit
-import SuperModel
+import SwiftyModel
 import XCTest
 
 
@@ -38,14 +38,14 @@ import XCTest
 }
 
 
-class GHUser: SuperModel {
+class GHUser: SwiftyModel {
     var login: String!
     var id: NSNumber!
     var avatarURL: NSURL?
 }
 
 
-class GHLabel: SuperModel {
+class GHLabel: SwiftyModel {
     var URL: NSURL!
     var name: String!
     var color: String!
@@ -58,7 +58,7 @@ class GHLabel: SuperModel {
 }
 
 
-class GHMilestone: SuperModel {
+class GHMilestone: SwiftyModel {
     var URL: NSURL!
     var HTMLURL: NSURL!
     var labelsURL: NSURL!
@@ -93,7 +93,7 @@ class GHMilestone: SuperModel {
 }
 
 
-class GHIssue: SuperModel {
+class GHIssue: SwiftyModel {
     var id: NSNumber!
     var URL: NSURL!
     var HTMLURL: NSURL!

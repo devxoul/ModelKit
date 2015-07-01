@@ -22,7 +22,7 @@
 
 import UIKit
 import XCTest
-import SuperModel
+import SwiftyModel
 
 
 @objc enum Gender: Int, StringEnum, Printable {
@@ -43,7 +43,7 @@ import SuperModel
     }
 }
 
-class User: SuperModel {
+class User: SwiftyModel {
     var id: Int!
     var name: String!
     var gender: Gender = .Unknown // enums must have a default value
@@ -54,7 +54,7 @@ class User: SuperModel {
     var alive: Bool?
 }
 
-class Post: SuperModel {
+class Post: SwiftyModel {
     var id: Int!
     var title: String!
     var content: String?
@@ -88,7 +88,7 @@ class Post: SuperModel {
     }
 }
 
-class SuperModelTests: XCTestCase {
+class SwiftyModelTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
@@ -96,7 +96,7 @@ class SuperModelTests: XCTestCase {
     }
     
     override func tearDown() {
-        SuperModel.defaultDateFormatter.dateFormat = nil
+        SwiftyModel.defaultDateFormatter.dateFormat = nil
         super.tearDown()
     }
     
@@ -213,14 +213,14 @@ class SuperModelTests: XCTestCase {
     }
 
     func testDefaultDate() {
-        SuperModel.defaultDateFormatter.dateFormat = "yyyy-MM-dd"
+        SwiftyModel.defaultDateFormatter.dateFormat = "yyyy-MM-dd"
         let dict: [String: NSObject] = [
             "id": 999,
             "title": "The Title",
             "publishedAt": "2015-01-03",
         ]
         let post = Post(dict)
-        XCTAssertEqual(SuperModel.defaultDateFormatter.stringFromDate(post.publishedAt!), "2015-01-03")
+        XCTAssertEqual(SwiftyModel.defaultDateFormatter.stringFromDate(post.publishedAt!), "2015-01-03")
     }
 
     func testToDictionary() {
@@ -314,10 +314,10 @@ class SuperModelTests: XCTestCase {
     }
 
     func testSetterNameForKey() {
-        XCTAssertEqual(SuperModel.propertySetterNameForKey(""), "")
-        XCTAssertEqual(SuperModel.propertySetterNameForKey(":"), "set::")
-        XCTAssertEqual(SuperModel.propertySetterNameForKey("name"), "setName:")
-        XCTAssertEqual(SuperModel.propertySetterNameForKey("_privateName"), "set_privateName:")
+        XCTAssertEqual(SwiftyModel.propertySetterNameForKey(""), "")
+        XCTAssertEqual(SwiftyModel.propertySetterNameForKey(":"), "set::")
+        XCTAssertEqual(SwiftyModel.propertySetterNameForKey("name"), "setName:")
+        XCTAssertEqual(SwiftyModel.propertySetterNameForKey("_privateName"), "set_privateName:")
     }
 
     func testNumberOptional() {

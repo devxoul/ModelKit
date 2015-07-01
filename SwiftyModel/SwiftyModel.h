@@ -22,12 +22,12 @@
 
 #import <UIKit/UIKit.h>
 
-//! Project version number for SuperModel.
-FOUNDATION_EXPORT double SuperModelVersionNumber;
+//! Project version number for SwiftyModel.
+FOUNDATION_EXPORT double SwiftyModelVersionNumber;
 
-//! Project version string for SuperModel.
-FOUNDATION_EXPORT const unsigned char SuperModelVersionString[];
+//! Project version string for SwiftyModel.
+FOUNDATION_EXPORT const unsigned char SwiftyModelVersionString[];
 
-// In this header, you should import all the public headers of your framework using statements like #import <SuperModel/PublicHeader.h>
+// In this header, you should import all the public headers of your framework using statements like #import <SwiftyModel/PublicHeader.h>
 
 
