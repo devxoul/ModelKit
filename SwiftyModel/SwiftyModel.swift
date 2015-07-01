@@ -23,70 +23,34 @@
 import Foundation
 
 
-public func == (lhs: Any.Type, rhs: Any.Type) -> Bool {
-    return ObjectIdentifier(lhs).hashValue == ObjectIdentifier(rhs).hashValue
-}
-
-public func == (lhs: SuperEnum.Type, rhs: SuperEnum.Type) -> Bool {
-    return toString(lhs) == toString(rhs)
-}
-
-public protocol SuperEnum {
-    var rawValue: Int { get }
-}
-
-public protocol StringEnum: SuperEnum {
-    var rawValues: [Int: String?] { get }
-}
-
-
-internal class Property: Printable {
-    var name: String!
-    var type: Any.Type!
-    var defaultValue: Any?
-
-    var isOptional: Bool = false
-    var isArray: Bool {
-        return self.typeDescription.hasPrefix("Array<")
-    }
-
-    var typeDescription: String {
-        var description = toString(self.type).stringByReplacingOccurrencesOfString(
-            "Swift.",
-            withString: "",
-            options: .allZeros,
-            range: nil
-        )
-        if self.isOptional {
-            let start = advance(description.startIndex, "Optional<".length)
-            let end = advance(description.endIndex, -1 * ">".length)
-            let range = Range<String.Index>(start: start, end: end)
-            description = description.substringWithRange(range) + "?"
-        }
-        return description
-    }
-
-    var modelClass: SwiftyModel.Type? {
-        var className = self.typeDescription
-        if self.isOptional {
-            className = className.substringToIndex(advance(className.endIndex, -1))
-        }
-        if self.isArray {
-            let start = advance(className.startIndex, "Array<".length)
-            let end = advance(className.endIndex, -1 * ">".length)
-            let range = Range<String.Index>(start: start, end: end)
-            className = className.substringWithRange(range)
-        }
-        return NSClassFromString(className) as? SwiftyModel.Type
-    }
-
-    var description: String {
-        return "@property \(self.name): \(self.typeDescription)"
-    }
-}
-
+// MARK: - SwiftyModel
 
 public class SwiftyModel: NSObject {
+
+
+    // MARK: Initializers
+
+    public convenience init(_ dictionary: AnyObject) {
+        self.init()
+        self.update(dictionary)
+    }
+
+    public class func fromArray(array: AnyObject?) -> [SwiftyModel] {
+        if let array = array as? [[String: NSObject]] {
+            return array.map { self.init($0) }
+        }
+        return []
+    }
+
+
+    // MARK: Public Interfaces
+
+    public static var defaultDateFormatter = NSDateFormatter()
+    public static var defaultNumberFormatter: NSNumberFormatter = {
+        let formatter = NSNumberFormatter()
+        formatter.numberStyle = .DecimalStyle
+        return formatter
+    }()
 
     public class func keyPathForKeys() -> [String: String]? {
         return nil
@@ -96,6 +60,14 @@ public class SwiftyModel: NSObject {
         return self.defaultDateFormatter
     }
 
+    public func update(dictionary: AnyObject) {
+        if let dictionary = dictionary as? [String: NSObject] {
+            self.setValuesForKeysWithDictionary(dictionary)
+        }
+    }
+
+
+    // MARK: Properties
 
     internal var properties: [Property] {
         if let cachedProperties = self.dynamicType.cachedProperties {
@@ -141,34 +113,8 @@ public class SwiftyModel: NSObject {
         }
     }
 
-    public class func propertySetterNameForKey(key: String) -> String {
-        if isEmpty(key) {
-            return key
-        }
-        let range = key.startIndex..<advance(key.startIndex, 1)
-        let uppercase = key.substringWithRange(range).uppercaseString
-        let name = "set" + key.stringByReplacingCharactersInRange(range, withString: uppercase) + ":"
-        return name
-    }
 
-
-    public class func fromArray(array: AnyObject?) -> [SwiftyModel] {
-        if let array = array as? [[String: NSObject]] {
-            return array.map { self.init($0) }
-        }
-        return []
-    }
-
-    public convenience init(_ dictionary: AnyObject) {
-        self.init()
-        self.update(dictionary)
-    }
-
-    public func update(dictionary: AnyObject) {
-        if let dictionary = dictionary as? [String: NSObject] {
-            self.setValuesForKeysWithDictionary(dictionary)
-        }
-    }
+    // MARK: KVC
 
     public override func setValuesForKeysWithDictionary(keyedValues: [NSObject : AnyObject]) {
         for (key, value) in keyedValues {
@@ -456,6 +402,9 @@ public class SwiftyModel: NSObject {
         return super.valueForKey(key)
     }
 
+
+    // MARK: Reverse
+
     public func toDictionary(nulls: Bool = false) -> [String: NSObject] {
         var dictionary = [String: NSObject]()
         for property in self.properties {
@@ -513,9 +462,17 @@ public class SwiftyModel: NSObject {
         return models.map { $0.toDictionary() }
     }
 
-    private struct Shared {
-        static let numberFormatter = NSNumberFormatter()
-        static let dateFormatter = NSDateFormatter()
+
+    // MARK: Utils
+
+    public class func propertySetterNameForKey(key: String) -> String {
+        if isEmpty(key) {
+            return key
+        }
+        let range = key.startIndex..<advance(key.startIndex, 1)
+        let uppercase = key.substringWithRange(range).uppercaseString
+        let name = "set" + key.stringByReplacingCharactersInRange(range, withString: uppercase) + ":"
+        return name
     }
 
     public class func numberFromValue(value: AnyObject?) -> NSNumber? {
@@ -523,11 +480,81 @@ public class SwiftyModel: NSObject {
             return value
         }
         if let string = value as? String {
-            Shared.numberFormatter.numberStyle = .DecimalStyle
-            return Shared.numberFormatter.numberFromString(string)
+            return self.defaultNumberFormatter.numberFromString(string)
         }
         return nil
     }
+    
+}
 
-    public static let defaultDateFormatter: NSDateFormatter = Shared.dateFormatter
+
+// MARK: - SuperEnum
+
+public protocol SuperEnum {
+    var rawValue: Int { get }
+}
+
+public protocol StringEnum: SuperEnum {
+    var rawValues: [Int: String?] { get }
+}
+
+
+// MARK: - Property
+
+internal class Property: Printable {
+
+    var name: String!
+    var type: Any.Type!
+    var defaultValue: Any?
+
+    var isOptional: Bool = false
+    var isArray: Bool {
+        return self.typeDescription.hasPrefix("Array<")
+    }
+
+    var typeDescription: String {
+        var description = toString(self.type).stringByReplacingOccurrencesOfString(
+            "Swift.",
+            withString: "",
+            options: .allZeros,
+            range: nil
+        )
+        if self.isOptional {
+            let start = advance(description.startIndex, "Optional<".length)
+            let end = advance(description.endIndex, -1 * ">".length)
+            let range = Range<String.Index>(start: start, end: end)
+            description = description.substringWithRange(range) + "?"
+        }
+        return description
+    }
+
+    var modelClass: SwiftyModel.Type? {
+        var className = self.typeDescription
+        if self.isOptional {
+            className = className.substringToIndex(advance(className.endIndex, -1))
+        }
+        if self.isArray {
+            let start = advance(className.startIndex, "Array<".length)
+            let end = advance(className.endIndex, -1 * ">".length)
+            let range = Range<String.Index>(start: start, end: end)
+            className = className.substringWithRange(range)
+        }
+        return NSClassFromString(className) as? SwiftyModel.Type
+    }
+
+    var description: String {
+        return "@property \(self.name): \(self.typeDescription)"
+    }
+
+}
+
+
+// MARK: - Operators
+
+public func == (lhs: Any.Type, rhs: Any.Type) -> Bool {
+    return ObjectIdentifier(lhs).hashValue == ObjectIdentifier(rhs).hashValue
+}
+
+public func == (lhs: SuperEnum.Type, rhs: SuperEnum.Type) -> Bool {
+    return toString(lhs) == toString(rhs)
 }
