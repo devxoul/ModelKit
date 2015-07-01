@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "SwiftyModel"
-  s.version      = "0.0.3"
+  s.version      = "0.1.0"
   s.summary      = "Model framework for Swift"
   s.homepage     = "http://github.com/SwiftyModel/SwiftyModel"
   s.license      = { :type => 'MIT', :file => 'LICENSE' }

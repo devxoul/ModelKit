@@ -84,7 +84,7 @@ I recommend you to try [CocoaSeeds](https://github.com/devxoul/CocoaSeeds), whic
 **Seedfile**
 
 ```ruby
-github 'SwiftyModel/SwiftyModel', '0.0.3', :files => 'SwiftyModel/SwiftyModel.swift'
+github 'SwiftyModel/SwiftyModel', '0.1.0', :files => 'SwiftyModel/SwiftyModel.swift'
 ```
 
 
