@@ -10,6 +10,9 @@
 		03272A641BB3E4E1005A7F78 /* ModelKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 03272A631BB3E4E1005A7F78 /* ModelKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		03272A6B1BB3E4E1005A7F78 /* ModelKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03272A601BB3E4E1005A7F78 /* ModelKit.framework */; settings = {ASSET_TAGS = (); }; };
 		03272A701BB3E4E1005A7F78 /* ModelKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03272A6F1BB3E4E1005A7F78 /* ModelKitTests.swift */; };
+		03272A7B1BB3E5A9005A7F78 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03272A7A1BB3E5A9005A7F78 /* Model.swift */; settings = {ASSET_TAGS = (); }; };
+		03272A7D1BB3E5C2005A7F78 /* Property.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03272A7C1BB3E5C2005A7F78 /* Property.swift */; settings = {ASSET_TAGS = (); }; };
+		03272A7F1BB3E646005A7F78 /* Transformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03272A7E1BB3E646005A7F78 /* Transformer.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +32,9 @@
 		03272A6A1BB3E4E1005A7F78 /* ModelKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ModelKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		03272A6F1BB3E4E1005A7F78 /* ModelKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelKitTests.swift; sourceTree = "<group>"; };
 		03272A711BB3E4E1005A7F78 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		03272A7A1BB3E5A9005A7F78 /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		03272A7C1BB3E5C2005A7F78 /* Property.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Property.swift; sourceTree = "<group>"; };
+		03272A7E1BB3E646005A7F78 /* Transformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transformer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +78,9 @@
 			isa = PBXGroup;
 			children = (
 				03272A631BB3E4E1005A7F78 /* ModelKit.h */,
+				03272A7A1BB3E5A9005A7F78 /* Model.swift */,
+				03272A7C1BB3E5C2005A7F78 /* Property.swift */,
+				03272A7E1BB3E646005A7F78 /* Transformer.swift */,
 				03272A651BB3E4E1005A7F78 /* Info.plist */,
 			);
 			path = ModelKit;
@@ -142,6 +151,7 @@
 		03272A571BB3E4E0005A7F78 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Suyeol Jeon";
 				TargetAttributes = {
@@ -193,6 +203,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03272A7D1BB3E5C2005A7F78 /* Property.swift in Sources */,
+				03272A7F1BB3E646005A7F78 /* Transformer.swift in Sources */,
+				03272A7B1BB3E5A9005A7F78 /* Model.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,6 +320,7 @@
 		03272A751BB3E4E1005A7F78 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -317,12 +331,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = kr.xoul.ModelKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		03272A761BB3E4E1005A7F78 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -375,6 +391,7 @@
 				03272A761BB3E4E1005A7F78 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		03272A771BB3E4E1005A7F78 /* Build configuration list for PBXNativeTarget "ModelKitTests" */ = {
 			isa = XCConfigurationList;
@@ -383,6 +400,7 @@
 				03272A791BB3E4E1005A7F78 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
