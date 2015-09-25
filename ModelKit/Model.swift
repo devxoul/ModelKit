@@ -152,6 +152,27 @@ public class Model {
         pointer.memory = value
     }
 
+    // MARK:
+
+    public func update(dictionary: [String: AnyObject]) {
+        for (key, value) in dictionary {
+            for (propertyName, keyPath) in self.dynamicType.JSONKeyPaths {
+                if key == keyPath {
+                    self[propertyName] = value
+                    return
+                }
+            }
+            self[key] = value
+        }
+    }
+
+
+    // MARK: JSONKeyPaths
+
+    public class var JSONKeyPaths: [String: String] {
+        return [:]
+    }
+
 }
 
 
