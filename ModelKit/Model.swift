@@ -26,20 +26,21 @@ public class Model {
 
     // MARK: Properties
 
-    private static var _cachedProperties: [String: Property]?
+    private static var _cachedProperties = [String: [String: Property]]()
     internal class var properties: [String: Property] {
-        if self._cachedProperties == nil {
-            self._cachedProperties = [:]
+        let modelName = String(self)
+        if self._cachedProperties[modelName] == nil {
+            self._cachedProperties[modelName] = [:]
             for child in Mirror(reflecting: self.init()).children {
                 if let label = child.label {
                     let mirror = Mirror(reflecting: child.value)
                     let displayStyle = mirror.displayStyle.flatMap { Mirror(reflecting: $0).displayStyle }
                     let property = Property(name: label, type: mirror.subjectType, displayStyle: displayStyle, defaultValue: child.value)
-                    self._cachedProperties![label] = property
+                    self._cachedProperties[modelName]![label] = property
                 }
             }
         }
-        return self._cachedProperties!
+        return self._cachedProperties[modelName]!
     }
 
 
