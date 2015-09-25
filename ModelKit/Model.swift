@@ -78,6 +78,7 @@ public class Model {
         }
         set {
             guard let property = self.dynamicType.properties[name] else {
+                debugPrint("Property '\(name)' does not exist.")
                 return
             }
 
@@ -147,8 +148,34 @@ public class Model {
                     self.unsafeSetProperty(name, value: enumValue.hashValue)
                 }
 
+                // Anything Else
+                else {
+                    fallthrough
+                }
+
             default:
-                break
+                let className = String(property.type).stringByReplacingOccurrencesOfString("Optional<", withString: "")
+                                                     .stringByReplacingOccurrencesOfString(">", withString: "")
+
+                // Relationship
+                if let modelClass = self.classNamed(className) as? Model.Type,
+                   let dictionary = newValue as? [String: AnyObject] {
+                    let model = modelClass.init()
+                    model.update(dictionary)
+                    self.unsafeSetProperty(name, value: model)
+                    break
+                }
+
+                // Array Relationship
+                if className.hasPrefix("Array<") {
+                    let elementTypeName = className.stringByReplacingOccurrencesOfString("Array<", withString: "")
+                    if let elementType = self.classNamed(elementTypeName) as? Model.Type,
+                       let array = newValue as? [[String: AnyObject]] {
+                        let models = elementType.fromArray(array)
+                        self.unsafeSetProperty(name, value: models)
+                        break
+                    }
+                }
             }
         }
     }
@@ -164,6 +191,15 @@ public class Model {
         let pointer = UnsafeMutablePointer<T?>(bitPattern: address)
         pointer.memory = value
     }
+
+    private func classNamed(className: String) -> AnyClass? {
+        let bundle = NSBundle(forClass: self.dynamicType)
+        if let prefix = bundle.objectForInfoDictionaryKey(kCFBundleExecutableKey as String) as? String {
+            return NSClassFromString(prefix + "." + className)
+        }
+        return NSClassFromString(className)
+    }
+
 
     // MARK:
 
