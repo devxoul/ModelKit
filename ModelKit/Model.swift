@@ -50,6 +50,19 @@ public class Model {
 
     }
 
+    public convenience init(dictionary: [String: AnyObject]) {
+        self.init()
+        self.update(dictionary)
+    }
+
+    public class func fromArray(array: [[String: AnyObject]]) -> [Model] {
+        return array.map {
+            let model = self.init()
+            model.update($0)
+            return model
+        }
+    }
+
 
     // MARK: Subscript
 
