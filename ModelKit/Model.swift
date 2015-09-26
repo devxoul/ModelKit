@@ -204,15 +204,22 @@ public class Model {
     // MARK:
 
     public func update(dictionary: [String: AnyObject]) {
-        for (key, value) in dictionary {
-            for (propertyName, keyPath) in self.dynamicType.JSONKeyPaths {
-                if key == keyPath {
-                    self[propertyName] = value
-                    return
-                }
+        for name in self.dynamicType.properties.keys {
+            if let keyPath = self.dynamicType.JSONKeyPaths[name] {
+                self[name] = self.dynamicType.valueForKeyPath(keyPath, inDictionary: dictionary)
+            } else {
+                self[name] = dictionary[name]
             }
-            self[key] = value
         }
+    }
+
+    class func valueForKeyPath(keyPath: String, inDictionary dictionary: [String: AnyObject]) -> AnyObject? {
+        var keys = keyPath.componentsSeparatedByString(".")
+        let value = dictionary[keys.removeFirst()]
+        if let subdictionary = value as? [String: AnyObject] {
+            return valueForKeyPath(keys.joinWithSeparator("."), inDictionary: subdictionary)
+        }
+        return value
     }
 
 
